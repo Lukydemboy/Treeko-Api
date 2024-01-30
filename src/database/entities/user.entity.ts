@@ -3,8 +3,10 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { AnimalEntity } from './animal.entity';
 
 function getRandomInt(min: number, max: number): number {
   min = Math.ceil(min);
@@ -43,6 +45,9 @@ export class UserEntity {
 
   @Column({ nullable: true })
   pushToken: string;
+
+  @OneToMany(() => AnimalEntity, (animal) => animal.createdBy)
+  createdAnimals: AnimalEntity[];
 
   @CreateDateColumn()
   createdAt: Date;

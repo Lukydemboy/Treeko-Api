@@ -13,7 +13,6 @@ export class UserService {
   async findById(id: string): Promise<UserEntity> {
     return this.userRepository
       .findOne({
-        relations: ['favoriteTeam', 'groups'],
         where: {
           id,
         },
