@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { AnimalEntity } from 'src/database/entities/animal.entity';
 import { Repository } from 'typeorm';
-import { CreateAnimalDto } from '../dto/animal.dto';
+import { CreateAnimalDto, UpdateAnimalDto } from '../dto/animal.dto';
 import { UserEntity } from 'src/database/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -12,10 +12,23 @@ export class AnimalService {
     private readonly animalRepository: Repository<AnimalEntity>,
   ) {}
 
+  async getById(animalId: string) {
+    console.log('animalId', animalId);
+    return this.animalRepository.findOne({ where: { id: animalId } });
+  }
+
   async create(createAnimalDto: CreateAnimalDto, userId: string) {
     return this.animalRepository.save({
       ...createAnimalDto,
       createdBy: Object.assign(new UserEntity(), { id: userId }),
     });
+  }
+
+  async update(updateAnimalDto: UpdateAnimalDto, animalId: string) {
+    return this.animalRepository.update(animalId, updateAnimalDto);
+  }
+
+  async delete(animalId: string) {
+    return this.animalRepository.softDelete(animalId);
   }
 }

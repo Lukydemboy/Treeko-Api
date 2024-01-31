@@ -10,6 +10,7 @@ export class Animal {
   ownedByUs: boolean;
   createdAt: Date;
   updatedAt: Date;
+  deletedAt?: Date;
 }
 
 export class CreateAnimalDto {
@@ -21,4 +22,12 @@ export class CreateAnimalDto {
   createdBy: UserEntity;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export class UpdateAnimalDto {
+  name: string;
+  gender: Gender;
+  dateOfBirth: Date;
+  image: string;
+  ownedByUs: boolean;
 }
