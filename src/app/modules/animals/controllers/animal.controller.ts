@@ -22,9 +22,13 @@ import { UpdateAnimalDto } from '../dto/animal.dto';
 export class AnimalController {
   constructor(private readonly animalService: AnimalService) {}
 
+  @Get()
+  async getAll() {
+    return this.animalService.getAll();
+  }
+
   @Get(':id')
   async getById(@Param('id') id: string) {
-    console.log('test');
     return this.animalService.getById(id);
   }
 

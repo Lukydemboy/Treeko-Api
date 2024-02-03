@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeOrmOptions } from './app.config';
 import { AnimalModule } from './modules/animals/animal.module';
 import { PairModule } from './modules/pairs/pairs.module';
+import { AssetsModule } from './modules/assets/assets.module';
 
 @Module({
   imports: [
@@ -11,6 +12,7 @@ import { PairModule } from './modules/pairs/pairs.module';
     AuthModule,
     AnimalModule,
     PairModule,
+    AssetsModule,
   ],
   controllers: [],
 })

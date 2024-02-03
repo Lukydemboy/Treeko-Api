@@ -18,7 +18,7 @@ export class AnimalEntity {
   @Column({ type: 'varchar', length: 100 })
   name: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', default: Gender.Unsexed })
   gender: Gender;
 
   @Column()

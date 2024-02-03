@@ -12,8 +12,11 @@ export class AnimalService {
     private readonly animalRepository: Repository<AnimalEntity>,
   ) {}
 
+  async getAll() {
+    return this.animalRepository.find();
+  }
+
   async getById(animalId: string) {
-    console.log('animalId', animalId);
     return this.animalRepository.findOne({ where: { id: animalId } });
   }
 
