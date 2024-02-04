@@ -3,6 +3,8 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinColumn,
+  ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
   Unique,
@@ -19,12 +21,6 @@ export class PairEntity {
   @Column({ type: 'varchar', length: 100 })
   name: string;
 
-  @OneToOne(() => AnimalEntity)
-  father: AnimalEntity;
-
-  @OneToOne(() => AnimalEntity)
-  mother: AnimalEntity;
-
   @Column({ default: false })
   paired: boolean;
 
@@ -39,4 +35,12 @@ export class PairEntity {
 
   @DeleteDateColumn()
   deletedAt?: Date;
+
+  @ManyToOne(() => AnimalEntity, (animal) => animal.malePairs)
+  @JoinColumn()
+  male: AnimalEntity;
+
+  @OneToOne(() => AnimalEntity, (animal) => animal.femalePair)
+  @JoinColumn()
+  female: AnimalEntity;
 }

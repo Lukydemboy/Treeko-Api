@@ -12,8 +12,14 @@ export class PairService {
     private readonly pairRepository: Repository<PairEntity>,
   ) {}
 
-  async get(id: string) {
-    return this.pairRepository.findOne({ where: { id } });
+  async getById(id: string) {
+    return this.pairRepository.findOne({
+      where: { id },
+      relations: {
+        female: true,
+        male: true,
+      },
+    });
   }
 
   async create(createPairDto: CreatePairDto, userId: string) {

@@ -13,11 +13,19 @@ export class AnimalService {
   ) {}
 
   async getAll() {
-    return this.animalRepository.find();
+    return this.animalRepository.find({
+      relations: { malePairs: true, femalePair: true },
+    });
   }
 
   async getById(animalId: string) {
-    return this.animalRepository.findOne({ where: { id: animalId } });
+    return this.animalRepository.findOne({
+      where: { id: animalId },
+      relations: {
+        malePairs: true,
+        femalePair: true,
+      },
+    });
   }
 
   async create(createAnimalDto: CreateAnimalDto, userId: string) {

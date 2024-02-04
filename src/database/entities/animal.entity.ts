@@ -5,10 +5,13 @@ import {
   DeleteDateColumn,
   Entity,
   ManyToOne,
+  OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { UserEntity } from './user.entity';
+import { PairEntity } from './pair.entity';
 
 @Entity('animal')
 export class AnimalEntity {
@@ -24,7 +27,7 @@ export class AnimalEntity {
   @Column()
   dateOfBirth: Date;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', nullable: true, default: null })
   image: string;
 
   @Column({ type: 'boolean' })
@@ -41,4 +44,10 @@ export class AnimalEntity {
 
   @DeleteDateColumn()
   deletedAt?: Date;
+
+  @OneToMany(() => PairEntity, (pair) => pair.male)
+  malePairs: PairEntity[];
+
+  @OneToOne(() => PairEntity, (pair) => pair.female)
+  femalePair: PairEntity;
 }

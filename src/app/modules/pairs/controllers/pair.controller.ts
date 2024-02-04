@@ -24,7 +24,7 @@ export class PairController {
 
   @Get(':id')
   async get(@Param('id') id: string) {
-    return this.pairService.get(id);
+    return this.pairService.getById(id);
   }
 
   @Post()
