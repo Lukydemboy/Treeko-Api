@@ -22,8 +22,13 @@ import { PairService } from '../services/pair.service';
 export class PairController {
   constructor(private readonly pairService: PairService) {}
 
+  @Get()
+  async getAll() {
+    return this.pairService.getAll();
+  }
+
   @Get(':id')
-  async get(@Param('id') id: string) {
+  async getById(@Param('id') id: string) {
     return this.pairService.getById(id);
   }
 
