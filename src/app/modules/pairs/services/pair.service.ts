@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { UserEntity } from 'src/database/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreatePairDto, UpdatePairDto } from '../dto/pair.dto';
 import { PairEntity } from 'src/database/entities/pair.entity';
+import { AnimalEntity } from 'src/database/entities/animal.entity';
 
 @Injectable()
 export class PairService {
@@ -32,8 +33,25 @@ export class PairService {
   }
 
   async create(createPairDto: CreatePairDto, userId: string) {
+    console.log('createPairDto', createPairDto.female);
+
+    const pair = await this.pairRepository.findOne({
+      where: {
+        female: Object.assign(new AnimalEntity(), {
+          id: createPairDto.female.id,
+        }),
+      },
+    });
+
+    if (pair) throw new ConflictException('Female already in another pair');
+
+    let name = createPairDto.name;
+    if (!name)
+      name = `${createPairDto?.male?.name} x ${createPairDto?.female?.name}`;
+
     return this.pairRepository.save({
       ...createPairDto,
+      name,
       createdBy: Object.assign(new UserEntity(), { id: userId }),
     });
   }

@@ -5,12 +5,14 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   Unique,
   UpdateDateColumn,
 } from 'typeorm';
 import { AnimalEntity } from './animal.entity';
+import { ClutchEntity } from './clutch.entity';
 
 @Entity('pair')
 export class PairEntity {
@@ -21,8 +23,8 @@ export class PairEntity {
   @Column({ type: 'varchar', length: 100 })
   name: string;
 
-  @Column({ default: false })
-  paired: boolean;
+  @Column({ default: null, nullable: true })
+  pairedAt: Date;
 
   @Column({ nullable: true, default: null })
   image?: string;
@@ -36,11 +38,14 @@ export class PairEntity {
   @DeleteDateColumn()
   deletedAt?: Date;
 
-  @ManyToOne(() => AnimalEntity, (animal) => animal.malePairs)
+  @ManyToOne(() => AnimalEntity, (animal) => animal.malePairs, { eager: true })
   @JoinColumn()
   male: AnimalEntity;
 
-  @OneToOne(() => AnimalEntity, (animal) => animal.femalePair)
+  @OneToOne(() => AnimalEntity, (animal) => animal.femalePair, { eager: true })
   @JoinColumn()
   female: AnimalEntity;
+
+  @OneToMany(() => ClutchEntity, (clutch) => clutch.pair)
+  clutches: ClutchEntity[];
 }

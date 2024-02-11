@@ -3,8 +3,8 @@ import { AnimalEntity } from 'src/database/entities/animal.entity';
 export class Pair {
   id: number;
   name: string;
-  father: AnimalEntity;
-  mother: AnimalEntity;
+  male: AnimalEntity;
+  female: AnimalEntity;
   paired: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -13,8 +13,8 @@ export class Pair {
 
 export class CreatePairDto {
   name: string;
-  father: AnimalEntity;
-  mother: AnimalEntity;
+  male: AnimalEntity;
+  female: AnimalEntity;
   paired: boolean;
   image: string;
 }

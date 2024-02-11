@@ -5,6 +5,7 @@ import { typeOrmOptions } from './app.config';
 import { AnimalModule } from './modules/animals/animal.module';
 import { PairModule } from './modules/pairs/pairs.module';
 import { AssetsModule } from './modules/assets/assets.module';
+import { ClutchesModule } from './modules/clutches/clutches.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { AssetsModule } from './modules/assets/assets.module';
     AnimalModule,
     PairModule,
     AssetsModule,
+    ClutchesModule,
   ],
   controllers: [],
 })

@@ -12,6 +12,7 @@ import {
 } from 'typeorm';
 import { UserEntity } from './user.entity';
 import { PairEntity } from './pair.entity';
+import { EggEntity } from './egg.entity';
 
 @Entity('animal')
 export class AnimalEntity {
@@ -32,6 +33,9 @@ export class AnimalEntity {
 
   @Column({ type: 'boolean' })
   ownedByUs: boolean;
+
+  @OneToOne(() => EggEntity, (egg) => egg.hatchedAnimal)
+  hatchedFromEgg: EggEntity;
 
   @ManyToOne(() => UserEntity, (user) => user.createdAnimals)
   createdBy: UserEntity;
