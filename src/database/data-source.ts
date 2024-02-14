@@ -9,6 +9,10 @@ export default new DataSource({
   password: environment.db.password,
   database: environment.db.name,
   entities: [],
-  synchronize: true,
   ssl: true,
+  extra: {
+    ssl: {
+      rejectUnauthorized: false,
+    },
+  },
 });
