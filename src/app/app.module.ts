@@ -6,6 +6,7 @@ import { AnimalModule } from './modules/animals/animal.module';
 import { PairModule } from './modules/pairs/pairs.module';
 import { AssetsModule } from './modules/assets/assets.module';
 import { ClutchesModule } from './modules/clutches/clutches.module';
+import { EggsModule } from './modules/eggs/eggs.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { ClutchesModule } from './modules/clutches/clutches.module';
     PairModule,
     AssetsModule,
     ClutchesModule,
+    EggsModule,
   ],
   controllers: [],
 })

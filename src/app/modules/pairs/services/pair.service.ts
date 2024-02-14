@@ -28,6 +28,9 @@ export class PairService {
       relations: {
         female: true,
         male: true,
+        clutches: {
+          eggs: true,
+        },
       },
     });
   }

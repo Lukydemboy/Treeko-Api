@@ -21,7 +21,7 @@ export class ClutchEntity {
   @Column({ type: 'varchar', length: 100 })
   name: string;
 
-  @ManyToOne(() => PairEntity, (pair) => pair.clutches)
+  @ManyToOne(() => PairEntity, (pair) => pair.clutches, { eager: true })
   @JoinColumn()
   pair: PairEntity;
 
