@@ -10,4 +10,5 @@ export default new DataSource({
   database: environment.db.name,
   entities: [],
   synchronize: true,
+  ssl: true,
 });
