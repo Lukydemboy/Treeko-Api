@@ -3,12 +3,16 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateClutchDto, UpdateClutchDto } from '../dto/update-clutch.dto';
 import { ClutchEntity } from 'src/database/entities/clutch.entity';
+import { EggEntity } from 'src/database/entities/egg.entity';
+import { IncubatorEntity } from 'src/database/entities/incubator.entity';
 
 @Injectable()
 export class ClutchesService {
   constructor(
     @InjectRepository(ClutchEntity)
     private readonly clutchRepository: Repository<ClutchEntity>,
+    @InjectRepository(EggEntity)
+    private readonly eggRepository: Repository<EggEntity>,
   ) {}
 
   async getAll() {
@@ -25,8 +29,45 @@ export class ClutchesService {
     });
   }
 
-  async create(createPairDto: CreateClutchDto) {
-    return this.clutchRepository.save(createPairDto);
+  async create(createClutchDto: CreateClutchDto) {
+    const createdClutch = await this.clutchRepository.save({
+      ...createClutchDto,
+      incubator: Object.assign(new IncubatorEntity(), {
+        id: createClutchDto.incubatorId,
+      }),
+    });
+
+    const currentClutches = await this.clutchRepository.find({
+      where: {
+        pair: createClutchDto.pair,
+      },
+      relations: {
+        eggs: true,
+      },
+    });
+
+    const clutchEggs = currentClutches.map((clutch) => clutch.eggs).flat();
+
+    const eggsToAddFromThisClutch = [
+      {
+        name: `${createClutchDto.pair.name} - Egg ${clutchEggs.length + 1}`,
+        laidAt: createClutchDto.laidAt ?? new Date(),
+        clutch: createdClutch,
+      },
+      {
+        name: `${createClutchDto.pair.name} - Egg ${clutchEggs.length + 2}`,
+        laidAt: createClutchDto.laidAt ?? new Date(),
+        clutch: createdClutch,
+      },
+    ];
+
+    const createEggPromises = eggsToAddFromThisClutch.map((egg) => {
+      this.eggRepository.save(egg);
+    });
+
+    await Promise.resolve(createEggPromises);
+
+    return createdClutch;
   }
 
   async update(updateAnimalDto: UpdateClutchDto, pairId: string) {

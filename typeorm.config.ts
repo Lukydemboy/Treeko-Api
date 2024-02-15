@@ -1,13 +1,14 @@
-import { environment } from 'src/app/environment';
 import { DataSource } from 'typeorm';
+import { ConfigService } from '@nestjs/config';
+import { config } from 'dotenv';
+
+config();
+
+const configService = new ConfigService();
 
 export default new DataSource({
   type: 'mysql',
-  host: environment.db.host,
-  port: environment.db.port,
-  username: environment.db.user,
-  password: environment.db.password,
-  database: environment.db.name,
+  url: configService.get<string>('DB_PRD_URL'),
   entities: ['dist/**/*.entity{.ts,.js}'],
   migrations: ['dist/migrations/*.js'],
   ssl: true,

@@ -8,6 +8,7 @@ export class UpdateClutchDto {
 
 export class CreateClutchDto {
   name: string;
-  incubator: IncubatorEntity;
+  laidAt: Date;
+  incubatorId: string;
   pair: PairEntity;
 }
