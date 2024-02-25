@@ -23,7 +23,11 @@ export class AnimalService {
       where: { id: animalId },
       relations: {
         malePairs: true,
-        femalePair: true,
+        femalePair: {
+          clutches: {
+            eggs: true,
+          },
+        },
       },
     });
   }
