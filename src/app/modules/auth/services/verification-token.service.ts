@@ -6,19 +6,20 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { VerificationTokenEntity } from 'src/database/entities/verification-token.entity';
 import { Repository } from 'typeorm';
-import { UserService } from '../../users/services/user.service';
 import * as bcrypt from 'bcrypt';
+import { UserEntity } from 'src/database/entities/user.entity';
 
 @Injectable()
 export class VerificationTokenService {
   constructor(
     @InjectRepository(VerificationTokenEntity)
     private readonly verificationTokenRepository: Repository<VerificationTokenEntity>,
-    private readonly userService: UserService,
+    @InjectRepository(UserEntity)
+    private readonly usersRepository: Repository<UserEntity>,
   ) {}
 
   async createVerificationToken(email: string, checkUserVerified = true) {
-    const user = await this.userService.findByEmail(email);
+    const user = await this.usersRepository.findOneBy({ email });
 
     if (!user)
       throw new ForbiddenException(

@@ -18,11 +18,30 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { AUTH } from 'src/app/constants';
 import { UserEntity } from 'src/database/entities/user.entity';
+import { AuthorizedRequest } from 'src/domain/types/jwt';
+import { CompleteProfileDto, UserDto } from '../dtos/user.dto';
 
 @ApiTags('users')
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
+
+  @Get('/me')
+  @UseGuards(AuthGuard(AUTH.ACCESS_TOKEN))
+  @ApiAuthorizationHeader(TokenType.Access)
+  getMe(@Req() req: AuthorizedRequest): Promise<UserDto> {
+    return this.userService.findById(req.user.id);
+  }
+
+  @Patch('/complete-profile')
+  @UseGuards(AuthGuard(AUTH.ACCESS_TOKEN))
+  @ApiAuthorizationHeader(TokenType.Access)
+  completeProfile(
+    @Req() req: AuthorizedRequest,
+    @Body() body: CompleteProfileDto,
+  ): Promise<UserDto> {
+    return this.userService.completeProfile(req.user.id, body);
+  }
 
   @Get(':userId')
   @UseGuards(AuthGuard(AUTH.ACCESS_TOKEN))
@@ -53,13 +72,10 @@ export class UserController {
     return this.userService.archive(userId);
   }
 
-  @Patch(':userId/push-token')
+  @Get(':userId/animals')
   @UseGuards(AuthGuard(AUTH.ACCESS_TOKEN))
-  updatePushToken(
-    @Req() req,
-    @Param('userId') userId: string,
-    @Body() body: { token: string },
-  ) {
-    return this.userService.updatePushToken(userId, body.token);
+  @ApiAuthorizationHeader(TokenType.Access)
+  getAnimals(@Req() req, @Param('userId') userId: string) {
+    return this.userService.getAnimals(userId);
   }
 }

@@ -13,7 +13,6 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { AuthTokensDto, RegisterDto } from '../dto/auth.dto';
 import { environment } from 'src/app/environment';
-import { UserService } from '../../users/services/user.service';
 import { TokenBlacklistService } from './token-blacklist.service';
 import { VerificationTokenService } from './verification-token.service';
 import { MailingService } from './mail.service';
@@ -21,7 +20,6 @@ import { MailingService } from './mail.service';
 type LoginDto = {
   accessToken: string;
   refreshToken: string;
-  user: UserEntity;
 };
 
 @Injectable()
@@ -31,18 +29,23 @@ export class AuthService {
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
     private readonly tokenBlacklistService: TokenBlacklistService,
-    private readonly userService: UserService,
     private readonly verificationTokenService: VerificationTokenService,
     private readonly mailingService: MailingService,
   ) {}
 
   async register(createUserDto: RegisterDto): Promise<UserEntity> {
-    await this.userService.emailExists(createUserDto.email).then((exists) => {
-      if (exists)
-        throw new ConflictException(
-          'This email is already in use. Try logging in or resetting your password.',
-        );
-    });
+    await this.userRepository
+      .exists({
+        where: {
+          email: createUserDto.email,
+        },
+      })
+      .then((exists) => {
+        if (exists)
+          throw new ConflictException(
+            'This email is already in use. Try logging in or resetting your password.',
+          );
+      });
 
     const hashedPassword = bcrypt.hashSync(createUserDto.password, 10);
 
@@ -76,23 +79,25 @@ export class AuthService {
       expiresIn: environment.auth.refreshToken.jwtExpirationTime,
     });
 
-    const user = await this.userService.findById(userId);
-
     return {
       accessToken,
       refreshToken,
-      user,
     };
   }
 
   login(email: string, password: string): Promise<LoginDto> {
-    return this.userService.findByEmail(email).then(async (user) => {
+    return this.userRepository.findOneByOrFail({ email }).then(async (user) => {
       if (!user) {
-        throw new UnauthorizedException('Email or password is incorrect');
+        throw new UnauthorizedException('Invalid credentials');
       }
 
       if (!user.password) {
         throw new BadRequestException('Password is required');
+      }
+
+      if (!bcrypt.compareSync(password, user.password)) {
+        console.log('password mismatch');
+        throw new UnauthorizedException('Invalid credentials');
       }
 
       if (!user.verified) {
@@ -100,15 +105,12 @@ export class AuthService {
           await this.verificationTokenService.createVerificationToken(
             user.email,
           );
-        await this.mailingService.sendVerifyEmailMail(user.email, token.token);
-        throw new UnauthorizedException(
-          'Email not verified, we have send you a new verification email',
-        );
-      }
 
-      if (!bcrypt.compareSync(password, user.password)) {
-        console.log('password mismatch');
-        throw new UnauthorizedException('Email or password is incorrect');
+        await this.mailingService.sendVerifyEmailMail(user.email, token.token);
+
+        throw new UnauthorizedException(
+          'User is not verified, we sent you an email with a link to verify your account.',
+        );
       }
 
       return this.loginInternal(user);
@@ -138,20 +140,22 @@ export class AuthService {
     oldPassword: string,
     newPassword: string,
   ): Promise<UpdateResult> {
-    return this.userService.findById(userId).then((user) => {
-      if (!user) throw new NotFoundException();
+    return this.userRepository
+      .findOneOrFail({ where: { id: userId } })
+      .then((user) => {
+        if (!user) throw new NotFoundException();
 
-      if (!user.password) throw new BadRequestException();
+        if (!user.password) throw new BadRequestException();
 
-      if (!bcrypt.compareSync(oldPassword, user.password))
-        throw new UnauthorizedException();
+        if (!bcrypt.compareSync(oldPassword, user.password))
+          throw new UnauthorizedException();
 
-      const hashedPassword = bcrypt.hashSync(newPassword, 10);
+        const hashedPassword = bcrypt.hashSync(newPassword, 10);
 
-      return this.userRepository.update(userId, {
-        password: hashedPassword,
+        return this.userRepository.update(userId, {
+          password: hashedPassword,
+        });
       });
-    });
   }
 
   async verifyEmail(email: string, token: string): Promise<void> {
@@ -186,7 +190,7 @@ export class AuthService {
   };
 
   forgotPassword = async (email: string): Promise<void> => {
-    const user = await this.userService.findByEmail(email);
+    const user = await this.userRepository.findOneBy({ email });
 
     if (!user) throw new NotFoundException();
 
@@ -204,7 +208,7 @@ export class AuthService {
     token: string,
     password: string,
   ): Promise<void> => {
-    const user = await this.userService.findByEmail(email);
+    const user = await this.userRepository.findOneBy({ email });
 
     if (!user) throw new NotFoundException();
 

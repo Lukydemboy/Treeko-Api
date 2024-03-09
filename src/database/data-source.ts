@@ -10,6 +10,7 @@ export default new DataSource({
   database: environment.db.name,
   entities: ['dist/**/*.entity{.ts,.js}'],
   migrations: ['dist/migrations/*.js'],
+  synchronize: true,
   ssl: true,
   extra: {
     ssl: {

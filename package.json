@@ -39,6 +39,7 @@
     "@sendgrid/mail": "^8.1.0",
     "aws-sdk": "^2.1356.0",
     "bcrypt": "^5.1.1",
+    "class-validators": "^1.0.1",
     "dotenv": "^16.4.1",
     "mysql2": "^3.9.1",
     "passport-jwt": "^4.0.1",
