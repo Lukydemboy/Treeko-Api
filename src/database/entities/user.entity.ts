@@ -7,6 +7,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { AnimalEntity } from './animal.entity';
+import { PairEntity } from './pair.entity';
 
 function getRandomInt(min: number, max: number): number {
   min = Math.ceil(min);
@@ -42,6 +43,9 @@ export class UserEntity {
 
   @OneToMany(() => AnimalEntity, (animal) => animal.owner)
   animals: AnimalEntity[];
+
+  @OneToMany(() => PairEntity, (pair) => pair.owner)
+  pairs: PairEntity[];
 
   @CreateDateColumn()
   createdAt: Date;

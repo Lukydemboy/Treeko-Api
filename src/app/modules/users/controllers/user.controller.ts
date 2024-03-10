@@ -6,6 +6,7 @@ import {
   Get,
   Param,
   Patch,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -20,6 +21,7 @@ import { AUTH } from 'src/app/constants';
 import { UserEntity } from 'src/database/entities/user.entity';
 import { AuthorizedRequest } from 'src/domain/types/jwt';
 import { CompleteProfileDto, UserDto } from '../dtos/user.dto';
+import { Gender } from 'src/domain/enums/gender.enum';
 
 @ApiTags('users')
 @Controller('users')
@@ -75,7 +77,18 @@ export class UserController {
   @Get(':userId/animals')
   @UseGuards(AuthGuard(AUTH.ACCESS_TOKEN))
   @ApiAuthorizationHeader(TokenType.Access)
-  getAnimals(@Req() req, @Param('userId') userId: string) {
-    return this.userService.getAnimals(userId);
+  getAnimals(
+    @Req() req,
+    @Param('userId') userId: string,
+    @Query() params?: { gender?: Gender },
+  ) {
+    return this.userService.getAnimals(userId, { gender: params.gender });
+  }
+
+  @Get(':userId/pairs')
+  @UseGuards(AuthGuard(AUTH.ACCESS_TOKEN))
+  @ApiAuthorizationHeader(TokenType.Access)
+  getPairs(@Req() req, @Param('userId') userId: string) {
+    return this.userService.getPairs(userId);
   }
 }

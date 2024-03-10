@@ -4,6 +4,7 @@ import { In, Repository } from 'typeorm';
 import { CompleteProfileDto, UpdateUserDto, UserDto } from '../dtos/user.dto';
 import { NotFoundException } from '@nestjs/common';
 import { AnimalEntity } from 'src/database/entities/animal.entity';
+import { Gender } from 'src/domain/enums/gender.enum';
 
 export class UserService {
   constructor(
@@ -89,16 +90,32 @@ export class UserService {
     return await this.userRepository.softDelete(userId);
   }
 
-  async getAnimals(userId: string) {
+  async getAnimals(userId: string, options: { gender?: Gender } = {}) {
     return await this.userRepository
       .findOneOrFail({
         where: {
           id: userId,
+          animals: {
+            gender: options.gender || undefined,
+          },
         },
         relations: {
           animals: true,
         },
       })
       .then((user) => user.animals);
+  }
+
+  async getPairs(userId: string) {
+    return await this.userRepository
+      .findOneOrFail({
+        where: {
+          id: userId,
+        },
+        relations: {
+          pairs: true,
+        },
+      })
+      .then((user) => user.pairs);
   }
 }
